@@ -1,84 +1,73 @@
 import React, {Component} from 'react';
+import {observer} from 'mobx-react';
 
-import SparkMD5 from 'spark-md5';
-import JSZip from 'jszip';
-import FileSaver from 'file-saver';
-import fe from 'lodash.foreach';
-import classNames from 'classnames';
+import ContactStep from './Steps/Contact';
+import NewspaperInfoStep from './Steps/NewspaperInfo';
+import AdvertisementSelectionStep from './Steps/AdvertisementSelection';
 
-import ContactStep from './steps/contact';
+import classnames from 'classnames';
 
-import icon from './img/fotm.png';
+import icon from '../img/fotm.png';
 
-class App extends Component {
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            queuedFiles: [],
-            step: 1
-        };
-    }
+const Wizard = observer(class Wizard extends Component {
 
     stepperClass = (step) => {
-        console.log(step);
-        return classNames(
+        return classnames(
             'col',
             'bs-wizard-step',
             {
-                'active' : step  ===  this.state.step,
-                'completed' : step < this.state.step,
-                'disabled': step > this.state.step
+                'active': step === this.props.storage.currentStep,
+                'complete': step < this.props.storage.currentStep,
+                'disabled': step > this.props.storage.currentStep
             }
         );
     };
 
-    increment = () => {
-        this.setState({
-           step: this.state.step + 1
-        });
-    }
+    back = () => {
+        if (this.props.storage.currentStep === 1) {
+            return;
+        }
 
-    handleFiles = () => {
-        let queuedFiles = this.state.queuedFiles;
-        let files = document.querySelector('#fileInput').files;
-
-        fe(files, function (file) {
-            let reader = new FileReader();
-            reader.onload = (function (file) {
-                return function (event) {
-                    let spark = new SparkMD5.ArrayBuffer();
-                    spark.append(event.target.result);
-
-                    console.log('MD5 (' + file.name + ') = ' + spark.end());
-
-                    let qf = {"filename": file.name, "data": event.target.result};
-                    queuedFiles.push(qf);
-                };
-            })(file);
-
-            reader.readAsArrayBuffer(file);
-        });
+        this.props.storage.setCurrentStep(this.props.storage.currentStep - 1);
     };
 
-    buildZip = () => {
-        let zip = new JSZip();
-        let files = this.state.queuedFiles;
 
-        fe(files, function (file) {
-            zip.file(file.filename, file.data);
-        });
+    next = () => {
+        if (this.props.storage.currentStep === 4) {
+            return;
+        }
 
-        zip.generateAsync({type: "blob"})
-            .then(function (blob) {
-                FileSaver.saveAs(blob, "test.zip");
-            });
+        this.props.storage.setCurrentStep(this.props.storage.currentStep + 1);
     };
 
-    listFiles = () => {
-        fe(this.state.queuedFiles, function (file) {
-            console.log(file.filename);
-        })
+    disabled = () => {
+        switch (this.props.storage.currentStep) {
+            case 1:
+                return false;
+            case 2:
+                return false; //this.props.storage.newspaperInfo.size === 0;
+            case 3:
+                return false;
+            case 4:
+                return false;
+            default:
+                return;
+        }
+    };
+
+    currentPane = () => {
+        switch (this.props.storage.currentStep) {
+            case 1:
+                return <ContactStep storage={this.props.storage}/>;
+            case 2:
+                return <NewspaperInfoStep storage={this.props.storage}/>;
+            case 3:
+                return <AdvertisementSelectionStep storage={this.props.storage}/>;
+            case 4:
+                return <span>oh hi mark</span>;
+            default:
+                return;
+        }
     };
 
     render() {
@@ -90,7 +79,7 @@ class App extends Component {
                     <h1 className="d-inline-block align-middle display-4">Freedom on the Move<br/>Submission Bundler
                     </h1>
                     <p className="lead">This utility will help you prepare an archive that is ready for both import and
-                        preserval.<br/>Please contact us if you require assistance.</p>
+                        preservation.<br/>Please contact us if you require assistance.</p>
                 </div>
 
                 <div className="container">
@@ -133,19 +122,24 @@ class App extends Component {
                         </div>
                     </div>
 
-                    <ContactStep/>
+                    {this.currentPane()}
+
+                    <div className="mx-auto pt-4 pb-5 clearfix">
+                        <button className="btn btn-outline-secondary float-left" type="button" onClick={this.back}>Back
+                        </button>
+                        &nbsp;&nbsp;
+                        {this.props.storage.currentStep < 4 && !this.disabled() ?
+                            <button className="btn btn-primary float-right" type="button"
+                                    onClick={this.next}>Next</button>
+                            : <button className="btn btn-primary float-right" type="button" disabled>Next</button>}
+                    </div>
 
                 </div>
-
-                <input id="fileInput" type="file" onChange={this.handleFiles} multiple/>
-
-                <button className="btn btn-primary" type="button" onClick={this.buildZip}>Bundle</button>
-                <button className="btn btn-info" type="button" onClick={this.listFiles}>List Files</button>
-                <button type="button" onClick={this.increment}>Increment</button>
 
             </div>
         );
     }
-}
 
-export default App;
+});
+
+export default Wizard;

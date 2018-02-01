@@ -70,7 +70,7 @@
 }
 
 .bs-wizard > .bs-wizard-step:first-child.active > .progress > .progress-bar {
-    width: 100%;
+    width: 0%;
 }
 
 .bs-wizard > .bs-wizard-step:last-child.active > .progress > .progress-bar {
@@ -90,16 +90,16 @@
     width: 50%;
 }
 
-.completed .progress {
-    background-color: #5b2d89;
-}
-
 .bs-wizard > .bs-wizard-step:last-child > .progress {
     width: 50%;
 }
 
 .bs-wizard > .bs-wizard-step.disabled a.bs-wizard-dot {
     pointer-events: none;
+}
+
+.progress-bar {
+    transition: none !important;
 }
 
 .icon {
