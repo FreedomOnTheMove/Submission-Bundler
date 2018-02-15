@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import {observer} from 'mobx-react';
-
+import FileHandler from '../FileHandler';
 import lodash from 'lodash';
-
 import shortid from 'shortid';
+
+import approve from 'approvejs';
 
 const NewspaperInfoStep = observer(class NewspaperInfoStep extends Component {
 
@@ -12,7 +13,9 @@ const NewspaperInfoStep = observer(class NewspaperInfoStep extends Component {
         this.state = {
             name: '',
             location: '',
-            state: 'null'
+            state: 'null',
+            advertisementManifest: null,
+            addNewspaperButtonDisabled: true
         }
     }
 
@@ -20,8 +23,12 @@ const NewspaperInfoStep = observer(class NewspaperInfoStep extends Component {
         this.setState({
             name: '',
             location: '',
-            state: 'null'
+            state: 'null',
+            advertisementManifest: null,
+            addNewspaperButtonDisabled: true
         });
+
+        document.getElementsByName("advertisementManifest")[0].value = "";
     };
 
     addNewspaper = () => {
@@ -29,9 +36,9 @@ const NewspaperInfoStep = observer(class NewspaperInfoStep extends Component {
             id: shortid.generate(),
             name: this.state.name,
             location: this.state.location,
-            state: this.state.state
+            state: this.state.state,
+            advertisementManifest: this.state.advertisementManifest
         });
-
         this.cancel();
     };
 
@@ -56,34 +63,75 @@ const NewspaperInfoStep = observer(class NewspaperInfoStep extends Component {
             default:
                 break;
         }
+        this.validateAddNewspaper();
     };
 
-    renderTableRows = (newspaperInfo) => {
+    handleManifiestSelection = (manifest) => {
+        this.setState({
+            advertisementManifest: manifest[0]
+        });
+        this.validateAddNewspaper();
+    };
+
+    validateAddNewspaper = () => {
+        let validNewspaperName = approve.value(this.state.name, {required: true, min: 1}).approved;
+        let validNewspaperLocation = approve.value(this.state.location, {required: true, min: 1}).approved;
+        let validNewspaperState = approve.value(this.state.state, {required: true, min: 2, max: 2}).approved;
+        let validAdvertisementManifest = this.state.advertisementManifest != null;
+
+        if (validNewspaperName && validNewspaperLocation && validNewspaperState && validAdvertisementManifest) {
+            this.setState({
+                addNewspaperButtonDisabled: false
+            });
+        } else {
+            this.setState({
+                addNewspaperButtonDisabled: true
+            });
+        }
+    };
+
+    renderTableRows = (newspaper) => {
         return (
-            <tr key={newspaperInfo.id}>
-                <td>{newspaperInfo.name}</td>
-                <td>{newspaperInfo.location}</td>
-                <td>{newspaperInfo.state}</td>
-                <td><button type="button" className="btn btn-small btn-danger" onClick={() =>  this.props.storage.deleteNewspaper(newspaperInfo.id)}>Delete</button></td>
+            <tr key={newspaper.id}>
+                <td>{newspaper.name}</td>
+                <td>{newspaper.location}</td>
+                <td>{newspaper.state}</td>
+                <td>{newspaper.advertisementManifest.filename}</td>
+                <td>
+                    <button type="button" className="btn btn-small btn-danger"
+                            onClick={() => this.props.storage.deleteNewspaper(newspaper.id)}>Delete
+                    </button>
+                </td>
             </tr>
         );
     };
 
     render() {
-        let tableRows = lodash.map(this.props.storage.newspaperInfo.toJS(), this.renderTableRows);
+        let tableRows;
+
+        if (this.props.storage.newspapers.size > 0) {
+            tableRows = lodash.map(this.props.storage.newspapers.toJS(), this.renderTableRows);
+        } else {
+            tableRows =
+                <tr>
+                    <td className="lead mt-2">Please enter in information for at least one newspaper.</td>
+                </tr>;
+        }
 
         return (
             <div>
                 <div className="clearfix">
                     <div className="float-left">
-                        <h3>Newspaper Info</h3>
-                        <p className="lead">Here you can define one or more newspapers that you wish to supply
-                            advertisements for.</p>
+                        <h3>Newspaper &amp; Advertisement Info</h3>
+                        <p className="lead">Here you can define newspaper &amp; advertisement information for
+                            the source
+                            material you are about to
+                            provide.</p>
                     </div>
 
                     <div className="float-right">
-                        <button type="button" className="btn btn-sm btn-outline-primary"
-                                data-toggle="modal" data-target="#addNewspaper">Add Newspaper
+                        <button type="button" className="btn btn-sm btn-primary"
+                                data-toggle="modal" data-target="#addInformation">Add Information
                         </button>
                     </div>
                 </div>
@@ -96,6 +144,7 @@ const NewspaperInfoStep = observer(class NewspaperInfoStep extends Component {
                                 <th scope="col">Name</th>
                                 <th scope="col">Location</th>
                                 <th scope="col">State</th>
+                                <th scope="col">Advertisement Manifest</th>
                                 <th scope="col">Options</th>
                             </tr>
                             </thead>
@@ -106,20 +155,24 @@ const NewspaperInfoStep = observer(class NewspaperInfoStep extends Component {
                     </div>
                 </div>
 
-                <div className="modal fade" id="addNewspaper" tabIndex="-1" role="dialog"
-                     aria-labelledby="addNewspaperLabel" aria-hidden="true">
+                <div className="modal fade" id="addInformation" tabIndex="-1" role="dialog"
+                     aria-labelledby="addInformationLabel" aria-hidden="true">
                     <div className="modal-dialog modal-lg" role="document">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h4 className="modal-title" id="addNewspaperLabel">Add Newspaper</h4>
+                                <h4 className="modal-title" id="addInformationLabel">Add
+                                    Newspaper &amp; Advertisement
+                                    Info</h4>
                             </div>
                             <div className="modal-body">
                                 <div className="row">
                                     <div className="col">
                                         <div className="form-group">
                                             <label htmlFor="newspaperName">Newspaper Name</label>
-                                            <input id="newspaperName" name="newspaperName" className="form-control"
-                                                   placeholder="The Virginia Gazette" onChange={this.handleChange}
+                                            <input id="newspaperName" name="newspaperName"
+                                                   className="form-control"
+                                                   placeholder="The Virginia Gazette"
+                                                   onChange={this.handleChange}
                                                    type="text" value={this.state.name}/>
                                         </div>
                                     </div>
@@ -138,7 +191,8 @@ const NewspaperInfoStep = observer(class NewspaperInfoStep extends Component {
                                     <div className="col">
                                         <div className="form-group">
                                             <label htmlFor="newspaperState">Newspaper State</label>
-                                            <select id="newspaperState" name="newspaperState" className="form-control"
+                                            <select id="newspaperState" name="newspaperState"
+                                                    className="form-control"
                                                     onChange={this.handleChange}
                                                     value={this.state.state}>
                                                 <option value="null" disabled>Select One</option>
@@ -197,13 +251,24 @@ const NewspaperInfoStep = observer(class NewspaperInfoStep extends Component {
                                         </div>
                                     </div>
                                 </div>
+                                <hr/>
+                                <div className="row">
+                                    <div className="col">
+                                        <div className="form-group">
+                                            <label htmlFor="advertisementManifest">Advertisement
+                                                Manifest</label>
+                                            <FileHandler name="advertisementManifest" accept=".csv"
+                                                         handleSelection={this.handleManifiestSelection}/>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-outline-danger" data-dismiss="modal"
                                         onClick={this.cancel}>Cancel
                                 </button>
                                 <button type="button" className="btn btn-primary" data-dismiss="modal"
-                                        onClick={this.addNewspaper}>Add
+                                        onClick={this.addNewspaper} disabled={this.state.addNewspaperButtonDisabled}>Add
                                 </button>
                             </div>
                         </div>

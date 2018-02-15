@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
 
 import SparkMD5 from 'spark-md5';
-import JSZip from 'jszip';
-import FileSaver from 'file-saver';
 import fe from 'lodash.foreach';
 
 class FileManager extends Component {
@@ -36,20 +34,6 @@ class FileManager extends Component {
         });
     };
 
-    buildZip = () => {
-        let zip = new JSZip();
-        let files = this.state.queuedFiles;
-
-        fe(files, function (file) {
-            zip.file(file.filename, file.data);
-        });
-
-        zip.generateAsync({type: "blob"})
-            .then(function (blob) {
-                FileSaver.saveAs(blob, "test.zip");
-            });
-    };
-
     listFiles = () => {
         fe(this.state.queuedFiles, function (file) {
             console.log(file.filename);
@@ -63,7 +47,7 @@ class FileManager extends Component {
                 <button className="btn btn-info" type="button" onClick={this.listFiles}>List Files</button>
             </div>
         )
-    }
+    };
 
 }
 
