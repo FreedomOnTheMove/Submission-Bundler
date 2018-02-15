@@ -1,5 +1,5 @@
 import * as mobx from 'mobx';
-import fe from 'lodash.foreach';
+import lodash from 'lodash';
 
 mobx.useStrict(true);
 
@@ -64,7 +64,7 @@ class StorageManager {
 
             validateAdvertisementUploads: mobx.action.bound(function () {
                 let moreUploadsRequired = false;
-                fe(this.newspapers.values(), function (newspaper) {
+                lodash.forEach(this.newspapers.values(), function (newspaper) {
                     if (newspaper.advertisements.size === 0) {
                         moreUploadsRequired = true;
                     }

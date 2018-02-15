@@ -11,7 +11,7 @@ import classnames from 'classnames';
 import icon from '../img/fotm.png';
 import moment from "moment/moment";
 import Papa from "papaparse";
-import fe from "lodash.foreach";
+import lodash from "lodash";
 import JSZip from "jszip";
 import SparkMD5 from "spark-md5";
 import FileSaver from "file-saver";
@@ -101,7 +101,7 @@ const Wizard = observer(class Wizard extends Component {
 
         let manifestData = [];
 
-        fe(this.props.storage.newspapers.toJS(), function (newspaper) {
+        lodash.forEach(this.props.storage.newspapers.toJS(), function (newspaper) {
             let dir = 'data/' + newspaper.id + '/';
             let currentDir = dataDir.folder(newspaper.id);
             let newspaperInfo = step.buildNewspaperInfo(newspaper);
@@ -112,7 +112,7 @@ const Wizard = observer(class Wizard extends Component {
             manifestData.push([SparkMD5.hash(newspaperInfo), dir + 'newspaper-info.txt']);
             manifestData.push([newspaper.advertisementManifest.checksum, dir + 'advertisement-manifest.csv']);
 
-            fe(newspaper.advertisements.toJS(), function (advertisement) {
+            lodash.forEach(newspaper.advertisements.toJS(), function (advertisement) {
                 currentDir.file(advertisement.filename, advertisement.data);
                 let currentFilePath = dir + advertisement.filename;
                 manifestData.push([advertisement.checksum, currentFilePath]);
@@ -222,7 +222,7 @@ const Wizard = observer(class Wizard extends Component {
 
                 </div>
 
-                <GithubCorner href="https://github.com/FreedomOnTheMove" bannerColor="#5b2d89"
+                <GithubCorner href="https://github.com/FreedomOnTheMove/Submission-Bundler" bannerColor="#5b2d89"
                               octoColor="#fff"/>
 
                 <div className="mx-auto text-center mb-5">

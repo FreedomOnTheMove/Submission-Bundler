@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 
 import SparkMD5 from 'spark-md5';
-import fe from 'lodash.foreach';
+import lodash from 'lodash';
 
 class FileManager extends Component {
 
@@ -16,7 +16,7 @@ class FileManager extends Component {
         let queuedFiles = this.state.queuedFiles;
         let files = document.querySelector('#fileInput').files;
 
-        fe(files, function (file) {
+        lodash.forEach(files, function (file) {
             let reader = new FileReader();
             reader.onload = (function (file) {
                 return function (event) {
@@ -35,7 +35,7 @@ class FileManager extends Component {
     };
 
     listFiles = () => {
-        fe(this.state.queuedFiles, function (file) {
+        lodash.forEach(this.state.queuedFiles, function (file) {
             console.log(file.filename);
         })
     };
