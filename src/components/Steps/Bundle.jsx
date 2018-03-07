@@ -28,22 +28,22 @@ const BundleStep = observer(class BundleStep extends Component {
                 <h3>Bundle Creation Summary</h3>
                 <dl className="row mt-3">
                     <dt className="col-sm-3">Institution Name</dt>
-                    <dd className="col-sm-9">{this.props.storage.contactInfo.institutionName}</dd>
+                    <dd className="col-sm-9">{this.props.storage.contactInfo.get('institutionName')}</dd>
 
                     <dt className="col-sm-3">Institution Address</dt>
-                    <dd className="col-sm-9">{this.props.storage.contactInfo.institutionAddress}</dd>
+                    <dd className="col-sm-9">{this.props.storage.contactInfo.get('institutionAddress')}</dd>
 
                     <dt className="col-sm-3">Contact Name</dt>
-                    <dd className="col-sm-9">{this.props.storage.contactInfo.contactName}</dd>
+                    <dd className="col-sm-9">{this.props.storage.contactInfo.get('contactName')}</dd>
 
                     <dt className="col-sm-3">Contact Email Address</dt>
-                    <dd className="col-sm-9">{this.props.storage.contactInfo.contactEmail}</dd>
+                    <dd className="col-sm-9">{this.props.storage.contactInfo.get('contactEmail')}</dd>
 
                     <dt className="col-sm-3">Submission Description</dt>
-                    <dd className="col-sm-9">{this.props.storage.contactInfo.submissionDescription}</dd>
+                    <dd className="col-sm-9">{this.props.storage.contactInfo.get('submissionDescription')}</dd>
 
                     <dt className="col-sm-3">Submission Identifier</dt>
-                    <dd className="col-sm-9">{this.props.storage.contactInfo.submissionIdentifier}</dd>
+                    <dd className="col-sm-9">{this.props.storage.contactInfo.get('submissionIdentifier')}</dd>
                 </dl>
 
                 <h4>Source Material Summary</h4>

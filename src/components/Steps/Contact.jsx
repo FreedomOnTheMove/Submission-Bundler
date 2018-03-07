@@ -1,23 +1,52 @@
 import React, {Component} from 'react';
+import {reaction} from 'mobx';
 import {observer} from 'mobx-react';
 
 import approve from 'approvejs';
 
 const ContactStep = observer(class ContactStep extends Component {
 
+    constructor(props) {
+        super(props);
+        reaction(
+            () => this.props.storage.validationTrigger,
+            () => {
+                if (this.props.storage.validationTrigger.value === 1) {
+                    this.validate();
+                    this.printValidationErrors();
+                }
+            }
+        );
+    }
+
     validate = () => {
         let contactInfo = this.props.storage.contactInfo;
-        let validInstitutionName = approve.value(contactInfo.institutionName, {required: true, min: 1}).approved;
-        let validInstitutionAddress = approve.value(contactInfo.institutionAddress, {required: true, min: 8}).approved;
-        let validContactName = approve.value(contactInfo.contactName, {required: true, min: 1}).approved;
-        let validContactEmail = approve.value(contactInfo.contactEmail, {required: true, email: true}).approved;
-        let validDescription = approve.value(contactInfo.submissionDescription, {required: true, min: 5}).approved;
-        let validIdentifier = approve.value(contactInfo.submissionIdentifier, {required: true, min: 1}).approved;
+        let validInstitutionName = approve.value(contactInfo.get('institutionName'), {required: true, min: 1}).approved;
+        let validInstitutionAddress = approve.value(contactInfo.get('institutionAddress'), {
+            required: true,
+            min: 1
+        }).approved;
+        let validContactName = approve.value(contactInfo.get('contactName'), {required: true, min: 1}).approved;
+        let validContactEmail = approve.value(contactInfo.get('contactEmail'), {required: true, email: true}).approved;
+        let validDescription = approve.value(contactInfo.get('submissionDescription'), {
+            required: true,
+            min: 1
+        }).approved;
+        let validIdentifier = approve.value(contactInfo.get('submissionIdentifier'), {required: true, min: 1}).approved;
 
-        if (contactInfo && validInstitutionName && validInstitutionAddress && validContactName && validContactEmail && validDescription && validIdentifier) {
+        if (contactInfo && validInstitutionName && validInstitutionAddress &&
+            validContactName && validContactEmail && validDescription && validIdentifier) {
             this.props.storage.setStepValidation(1, false);
         } else {
             this.props.storage.setStepValidation(1, true);
+        }
+    };
+
+    printValidationErrors = () => {
+        let form = document.getElementsByClassName('needs-validation')[0];
+        let valid = form.checkValidity();
+        if (!valid) {
+            form.classList.add('was-validated');
         }
     };
 
@@ -31,71 +60,107 @@ const ContactStep = observer(class ContactStep extends Component {
             <div>
                 <h3>Contact Information</h3>
 
-                <form name="bundlerForm">
+                <form name="bundlerForm" className="needs-validation" noValidate>
                     <div className="row">
-                        <div className="col">
-                            <div className="form-group form-label-group">
-                                <input id="institutionName" name="institutionName" className="form-control"
-                                       placeholder="Institution Name" required=""
-                                       type="text" value={this.props.storage.contactInfo.institutionName}
-                                       onChange={this.handleChange}/>
+                        <div className="col pt-1">
+                            <div className="form-group form-label-group required">
                                 <label htmlFor="institutionName">Institution Name</label>
+                                <input id="institutionName" name="institutionName" className="form-control"
+                                       placeholder="Institution Name" required
+                                       type="text" value={this.props.storage.contactInfo.get('institutionName')}
+                                       onChange={this.handleChange}/>
+                                <div className="valid-feedback">
+                                    Great! This will appear in the citation information.
+                                </div>
+                                <div className="invalid-feedback">
+                                    Please provide an institution name.
+                                </div>
                             </div>
                         </div>
 
                         <div className="col">
-                            <div className="form-group form-label-group">
-                                <input id="institutionAddress" name="institutionAddress" className="form-control"
-                                       placeholder="Institution Address" required=""
-                                       type="text" value={this.props.storage.contactInfo.institutionAddress}
-                                       onChange={this.handleChange}/>
+                            <div className="form-group form-label-group required">
                                 <label htmlFor="institutionAddress">Institution Address</label>
+                                <input id="institutionAddress" name="institutionAddress" className="form-control"
+                                       placeholder="Institution Address" required
+                                       type="text" value={this.props.storage.contactInfo.get('institutionAddress')}
+                                       onChange={this.handleChange}/>
+                                <div className="valid-feedback">
+                                    Great! This will appear in the citation information.
+                                </div>
+                                <div className="invalid-feedback">
+                                    Please provide an address.
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <div className="row pb-4">
                         <div className="col">
-                            <div className="form-group form-label-group">
-                                <input id="contactName" name="contactName" className="form-control"
-                                       placeholder="Your Name"
-                                       type="text" value={this.props.storage.contactInfo.contactName} required=""
-                                       onChange={this.handleChange}/>
+                            <div className="form-group form-label-group required">
                                 <label htmlFor="contactName">Contact Name</label>
+                                <input id="contactName" name="contactName" className="form-control"
+                                       placeholder="Contact Name"
+                                       type="text" value={this.props.storage.contactInfo.get('contactName')} required
+                                       onChange={this.handleChange}/>
+                                <div className="valid-feedback">
+                                   We just need to know who to contact if something comes up.<br/>This will not be shared.
+                                </div>
+                                <div className="invalid-feedback">
+                                    Please provide the point of contact's name.
+                                </div>
                             </div>
                         </div>
 
                         <div className="col">
-                            <div className="form-group form-label-group">
-                                <input id="contactEmail" name="contactEmail" className="form-control"
-                                       placeholder="Your Email Address" required=""
-                                       type="email" value={this.props.storage.contactInfo.contactEmail}
-                                       onChange={this.handleChange}/>
+                            <div className="form-group form-label-group required">
                                 <label htmlFor="contactEmail">Contact Email Address</label>
+                                <input id="contactEmail" name="contactEmail" className="form-control"
+                                       placeholder="Your Email Address" required
+                                       type="email" value={this.props.storage.contactInfo.get('contactEmail')}
+                                       onChange={this.handleChange}/>
+                                <div className="valid-feedback">
+                                   Great! We will email {this.props.storage.contactInfo.get('contactEmail')} if we need to contact you.<br />This email address will not be shared.
+                                </div>
+                                <div className="invalid-feedback">
+                                    Please provide the point of contact's email.
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <h3>Submission Metadata</h3>
 
-                    <div className="row">
+                    <div className="row pt-1">
                         <div className="col">
-                            <div className="form-group form-label-group">
-                                <input id="submissionDescription" name="submissionDescription" className="form-control"
-                                       placeholder="Description" type="text" required=""
-                                       value={this.props.storage.contactInfo.submissionDescription}
-                                       onChange={this.handleChange}/>
+                            <div className="form-group form-label-group required">
                                 <label htmlFor="submissionDescription">Description</label>
+                                <input id="submissionDescription" name="submissionDescription" className="form-control"
+                                       placeholder="Description" type="text" required
+                                       value={this.props.storage.contactInfo.get('submissionDescription')}
+                                       onChange={this.handleChange}/>
+                                <div className="valid-feedback">
+                                    Great! This description will appear alongside citation information.
+                                </div>
+                                <div className="invalid-feedback">
+                                    Please provide a brief description of this submission.
+                                </div>
                             </div>
                         </div>
 
                         <div className="col">
-                            <div className="form-group form-label-group">
-                                <input id="submissionIdentifier" name="submissionIdentifier" className="form-control"
-                                       placeholder="Submission Identifier" type="text" required=""
-                                       value={this.props.storage.contactInfo.submissionIdentifier}
-                                       onChange={this.handleChange}/>
+                            <div className="form-group form-label-group required">
                                 <label htmlFor="submissionIdentifier">Submission Identifier</label>
+                                <input id="submissionIdentifier" name="submissionIdentifier" className="form-control"
+                                       placeholder="Submission Identifier" type="text" required
+                                       value={this.props.storage.contactInfo.get('submissionIdentifier')}
+                                       onChange={this.handleChange}/>
+                                <div className="valid-feedback">
+                                    We will identify your submission with the label {this.props.storage.contactInfo.get('submissionIdentifier')}.
+                                </div>
+                                <div className="invalid-feedback">
+                                    Please provide an identifier that will be used to reference this submission.
+                                </div>
                             </div>
                         </div>
                     </div>

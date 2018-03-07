@@ -1,6 +1,6 @@
 {
   "name": "fotm-bundler",
-  "homepage": "https://freedomonthemove.github.io/submission-bundler/",
+  "homepage": "https://fotm-bundler.ciser.cloud",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

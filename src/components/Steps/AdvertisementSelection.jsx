@@ -6,8 +6,21 @@ import FileHandler from '../FileHandler';
 import lodash from "lodash";
 
 import shortid from 'shortid';
+import {reaction} from 'mobx';
 
 const AdvertisementSelectionStep = observer(class AdvertisementSelectionStep extends Component {
+
+    constructor(props) {
+        super(props);
+        reaction(
+            () => this.props.storage.validationTrigger,
+            () => {
+                if (this.props.storage.validationTrigger.value === 3) {
+                    this.validate();
+                }
+            }
+        );
+    };
 
     handleAdvertisements = (advertisements, newspaperID) => {
         let addAdvertisement = this.props.storage.addAdvertisement;
@@ -36,6 +49,23 @@ const AdvertisementSelectionStep = observer(class AdvertisementSelectionStep ext
                 </td>
             </tr>
         );
+    };
+
+    validate = () => {
+        let eachPaperHasAnAdd = true;
+
+        lodash.forEach(this.props.storage.newspapers.toJS(), function (newspaper) {
+            console.log(newspaper);
+            if (newspaper.advertisements.size < 1) {
+                eachPaperHasAnAdd = false;
+            }
+        });
+
+        if (!eachPaperHasAnAdd) {
+            document.getElementById('one-ad-per-paper').classList.remove('invisible');
+        } else {
+            document.getElementById('one-ad-per-paper').classList.add('invisible');
+        }
     };
 
     uploadSection = (newspaper) => {
@@ -69,6 +99,9 @@ const AdvertisementSelectionStep = observer(class AdvertisementSelectionStep ext
 
         return (
             <div>
+                <div id="one-ad-per-paper" className="alert alert-danger invisible" role="alert">
+                    Please upload at least one advertisement for each newspaper specified in step two.
+                </div>
                 <div className="clearfix pb-3">
                     <h3>Advertisement Selection</h3>
                     <p className="lead">Here you can upload source material belonging to the newspapers entered in step two.</p>

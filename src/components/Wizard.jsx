@@ -16,6 +16,10 @@ import JSZip from "jszip";
 import SparkMD5 from "spark-md5";
 import FileSaver from "file-saver";
 
+import $ from 'jquery';
+import loading from '../img/loading.gif';
+import done from '../img/done.gif';
+
 const bagitTXT = 'BagIt-Version: 0.97\n' +
     'Tag-File-Character-Encoding: UTF-8';
 
@@ -46,26 +50,16 @@ const Wizard = observer(class Wizard extends Component {
     };
 
     next = () => {
+        if (this.props.storage.stepValidation[this.props.storage.currentStep]) {
+            this.props.storage.validate();
+            return;
+        }
+
         if (this.props.storage.currentStep === 4) {
             return;
         }
 
         this.props.storage.setCurrentStep(this.props.storage.currentStep + 1);
-    };
-
-    disabled = () => {
-        switch (this.props.storage.currentStep) {
-            case 1:
-                return this.props.storage.stepValidation[1];
-            case 2:
-                return this.props.storage.stepValidation[2];
-            case 3:
-                return this.props.storage.stepValidation[3];
-            case 4:
-                return this.props.storage.stepValidation[4];
-            default:
-                return;
-        }
     };
 
     currentPane = () => {
@@ -83,8 +77,8 @@ const Wizard = observer(class Wizard extends Component {
                     <div className="row">
                         <div className="col">
                             <p className="lead text-center font-weight-normal">
-                                This utility will help you prepare an archive that is ready for both import and
-                                preservation.<br/>Please contact us if you require assistance.<br/><br/>
+                                This utility will help you prepare an archive of advertisements that is<br/>ready for both preservation and import into our crowdsourcing system.<br/><br/>
+                                Please contact us if you require assistance.<br/><br/>
                                 <button className="btn btn-lg btn-primary" type="button"
                                         onClick={this.next}>Get Started
                                 </button>
@@ -95,6 +89,7 @@ const Wizard = observer(class Wizard extends Component {
     };
 
     buildZip = () => {
+        $('#buildingModal').modal('show');
         let step = this;
         let zip = new JSZip();
         let dataDir = zip.folder('data');
@@ -125,11 +120,13 @@ const Wizard = observer(class Wizard extends Component {
         zip.file('bag-info.txt', this.buildBagInfo());
         zip.file('manifest-md5.txt', manifest);
 
-        let filename = this.props.storage.contactInfo.institutionName
-            + ' - ' + this.props.storage.contactInfo.submissionIdentifier + '.zip';
+        let filename = this.props.storage.contactInfo.get('institutionName')
+            + ' - ' + this.props.storage.contactInfo.get('submissionIdentifier') + '.zip';
 
         zip.generateAsync({type: "blob"})
             .then(function (blob) {
+                $('#buildingModal').modal('hide');
+                $('#doneModal').modal('show');
                 FileSaver.saveAs(blob, filename);
             });
     };
@@ -143,12 +140,12 @@ const Wizard = observer(class Wizard extends Component {
     };
 
     buildBagInfo = () => {
-        let sourceOrg = 'Source-Organization: ' + this.props.storage.contactInfo.institutionName + '\n';
-        let orgAddress = 'Organization-Address: ' + this.props.storage.contactInfo.institutionAddress + '\n';
-        let contactName = 'Contact-Name: ' + this.props.storage.contactInfo.contactName + '\n';
-        let contactEmail = 'Contact-Email: ' + this.props.storage.contactInfo.contactEmail + '\n';
-        let externalDescription = 'External-Description: ' + this.props.storage.contactInfo.submissionDescription + '\n';
-        let externalId = 'External-Identifier: ' + this.props.storage.contactInfo.submissionIdentifier + '\n';
+        let sourceOrg = 'Source-Organization: ' + this.props.storage.contactInfo.get('institutionName') + '\n';
+        let orgAddress = 'Organization-Address: ' + this.props.storage.contactInfo.get('institutionAddress') + '\n';
+        let contactName = 'Contact-Name: ' + this.props.storage.contactInfo.get('contactName') + '\n';
+        let contactEmail = 'Contact-Email: ' + this.props.storage.contactInfo.get('contactEmail') + '\n';
+        let externalDescription = 'External-Description: ' + this.props.storage.contactInfo.get('submissionDescription') + '\n';
+        let externalId = 'External-Identifier: ' + this.props.storage.contactInfo.get('submissionIdentifier') + '\n';
         let baggingDate = 'Bagging-Date: ' + moment().toISOString();
 
         return bagitProfile + sourceOrg + orgAddress + contactName + contactEmail
@@ -210,12 +207,10 @@ const Wizard = observer(class Wizard extends Component {
                         {this.props.storage.currentStep > 1 &&
                         <button className="btn btn-outline-secondary float-left" type="button" onClick={this.back}>Back
                         </button>}
-                        {this.props.storage.currentStep > 0 && this.props.storage.currentStep < 4 ? !this.disabled() ?
+                        {this.props.storage.currentStep > 0 && this.props.storage.currentStep < 4 ?
                             <button className="btn btn-primary float-right" type="button"
                                     onClick={this.next}>Next</button>
-                            :
-                            <button className="btn btn-primary float-right" type="button" disabled>Next</button> :
-                            null}
+                             : null}
 
                         {this.props.storage.currentStep === 4 && <button type="button" className="btn btn-primary float-right" onClick={this.buildZip}>Build Bundle</button>}
                     </div>
@@ -232,6 +227,34 @@ const Wizard = observer(class Wizard extends Component {
                         the<br/><a href="https://www.neh.gov/" className="neh-link">National Endowment for the
                             Humanities</a>.
                     </small>
+                </div>
+
+
+                <div id="buildingModal" className="modal" role="dialog">
+                    <div className="modal-dialog" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">Bundle is being created.</h5>
+                            </div>
+                            <div className="modal-body text-center">
+                                <img src={loading} alt="Building bundle" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="doneModal" className="modal" role="dialog">
+                    <div className="modal-dialog" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">All done!</h5>
+                            </div>
+                            <div className="modal-body text-center">
+                                <img width="300" src={done} alt="Done checkmark" /><br />
+                                Please send this bundle to submissions@freedomonthemove.org.
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         );

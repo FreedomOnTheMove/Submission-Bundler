@@ -6,31 +6,39 @@ mobx.useStrict(true);
 class StorageManager {
     constructor() {
         mobx.extendObservable(this, {
+            validationTrigger: mobx.observable(0),
             currentStep: 0,
             stepValidation: [false, true, true, true, false],
-            contactInfo: new mobx.ObservableMap(),
+            contactInfo: new mobx.ObservableMap(new Map([
+                ['institutionName', ''],
+                ['institutionAddress', ''],
+                ['contactName', ''],
+                ['contactEmail', ''],
+                ['submissionDescription', ''],
+                ['submissionIdentifier', ''],
+            ])),
             newspapers: new mobx.ObservableMap(),
 
             handleChange: mobx.action.bound(function (event) {
                 let value = event.target.value;
                 switch (event.target.name) {
                     case 'institutionName':
-                        this.contactInfo.institutionName = value;
+                        this.contactInfo.set('institutionName', value);
                         break;
                     case 'institutionAddress':
-                        this.contactInfo.institutionAddress = value;
+                        this.contactInfo.set('institutionAddress', value);
                         break;
                     case 'contactName':
-                        this.contactInfo.contactName = value;
+                        this.contactInfo.set('contactName', value);
                         break;
                     case 'contactEmail':
-                        this.contactInfo.contactEmail = value;
+                        this.contactInfo.set('contactEmail', value);
                         break;
                     case 'submissionDescription':
-                        this.contactInfo.submissionDescription = value;
+                        this.contactInfo.set('submissionDescription', value);
                         break;
                     case 'submissionIdentifier':
-                        this.contactInfo.submissionIdentifier = value;
+                        this.contactInfo.set('submissionIdentifier', value);
                         break;
                     default:
                         break;
@@ -51,10 +59,6 @@ class StorageManager {
             }),
 
             addAdvertisement: mobx.action.bound(function (newspaperKey, advertisement) {
-                console.log(newspaperKey);
-                console.log(advertisement);
-                console.log('\n');
-
                 this.newspapers.get(newspaperKey).advertisements.set(advertisement.id, advertisement);
             }),
 
@@ -83,6 +87,10 @@ class StorageManager {
 
             setStepValidation: mobx.action.bound(function (step, state) {
                this.stepValidation[step] = state;
+            }),
+
+            validate: mobx.action.bound(function () {
+                this.validationTrigger = mobx.observable(this.currentStep);
             })
 
         });

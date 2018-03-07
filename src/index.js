@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import App from './App';
+import Bundler from './Bundler';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<Bundler />, document.getElementById('root'));
