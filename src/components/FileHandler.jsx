@@ -65,7 +65,7 @@ class FileHandler extends Component {
                         </div>
                     </div>
                 </div>
-                <input id={this.props.name} className="form-control" type="file" name={this.props.name}
+                <input id={this.props.name} className="form-control-file" type="file" name={this.props.name}
                        accept={this.props.accept}
                        onChange={this.handleFiles} multiple={this.props.multiple} value={this.props.value}/>
             </div>

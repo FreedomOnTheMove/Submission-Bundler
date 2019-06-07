@@ -5,13 +5,12 @@ import FileHandler from '../FileHandler';
 
 import lodash from "lodash";
 
-import shortid from 'shortid';
+import uid from '@instructure/uid';
 import {reaction} from 'mobx';
 
 const AdvertisementSelectionStep = observer(class AdvertisementSelectionStep extends Component {
 
-    constructor(props) {
-        super(props);
+    componentDidMount() {
         reaction(
             () => this.props.storage.validationTrigger,
             () => {
@@ -20,13 +19,13 @@ const AdvertisementSelectionStep = observer(class AdvertisementSelectionStep ext
                 }
             }
         );
-    };
+    }
 
     handleAdvertisements = (advertisements, newspaperID) => {
         let addAdvertisement = this.props.storage.addAdvertisement;
         lodash.forEach(advertisements, function (advertisement) {
             addAdvertisement(newspaperID, {
-                id: shortid.generate(),
+                id: uid(),
                 filename: advertisement.filename,
                 data: advertisement.data,
                 checksum: advertisement.checksum,
@@ -44,7 +43,10 @@ const AdvertisementSelectionStep = observer(class AdvertisementSelectionStep ext
                 <td>{advertisement.checksum}</td>
                 <td>
                     <button type="button" className="btn btn-small btn-danger"
-                            onClick={() => this.props.storage.deleteAdvertisement(advertisement.newspaperID, advertisement.id)}>Delete
+                            onClick={() => {
+                                this.props.storage.deleteAdvertisement(advertisement.newspaperID, advertisement.id);
+                                this.validate();
+                            }}>Delete
                     </button>
                 </td>
             </tr>
@@ -53,9 +55,9 @@ const AdvertisementSelectionStep = observer(class AdvertisementSelectionStep ext
 
     validate = () => {
         let eachPaperHasAnAdd = true;
+        this.props.storage.validateAdvertisementUploads();
 
         lodash.forEach(this.props.storage.newspapers.toJS(), function (newspaper) {
-            console.log(newspaper);
             if (newspaper.advertisements.size < 1) {
                 eachPaperHasAnAdd = false;
             }
@@ -104,7 +106,7 @@ const AdvertisementSelectionStep = observer(class AdvertisementSelectionStep ext
                 </div>
                 <div className="clearfix pb-3">
                     <h3>Advertisement Selection</h3>
-                    <p className="lead">Here you can upload source material belonging to the newspapers entered in step two.</p>
+                    <p className="lead">Here you can upload advertisement scans from the newspapers entered in step two.</p>
                 </div>
                 {uploadSections}
             </div>

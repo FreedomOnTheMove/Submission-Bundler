@@ -14,8 +14,6 @@ class StorageManager {
                 ['institutionAddress', ''],
                 ['contactName', ''],
                 ['contactEmail', ''],
-                ['submissionDescription', ''],
-                ['submissionIdentifier', ''],
             ])),
             newspapers: new mobx.ObservableMap(),
 
@@ -33,12 +31,6 @@ class StorageManager {
                         break;
                     case 'contactEmail':
                         this.contactInfo.set('contactEmail', value);
-                        break;
-                    case 'submissionDescription':
-                        this.contactInfo.set('submissionDescription', value);
-                        break;
-                    case 'submissionIdentifier':
-                        this.contactInfo.set('submissionIdentifier', value);
                         break;
                     default:
                         break;

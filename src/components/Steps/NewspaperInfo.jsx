@@ -3,7 +3,7 @@ import {reaction} from "mobx";
 import {observer} from 'mobx-react';
 import FileHandler from '../FileHandler';
 import lodash from 'lodash';
-import shortid from 'shortid';
+import uid from '@instructure/uid';
 import approve from 'approvejs';
 
 const NewspaperInfoStep = observer(class NewspaperInfoStep extends Component {
@@ -17,6 +17,9 @@ const NewspaperInfoStep = observer(class NewspaperInfoStep extends Component {
             advertisementManifest: null,
             addNewspaperButtonDisabled: true
         };
+    }
+
+    componentWillMount() {
         reaction(
             () => this.props.storage.validationTrigger,
             () => {
@@ -49,7 +52,7 @@ const NewspaperInfoStep = observer(class NewspaperInfoStep extends Component {
 
     addNewspaper = () => {
         this.props.storage.addNewspaper({
-            id: shortid.generate(),
+            id: uid(),
             name: this.state.name,
             location: this.state.location,
             state: this.state.state,
@@ -142,16 +145,13 @@ const NewspaperInfoStep = observer(class NewspaperInfoStep extends Component {
                         Please provide information for at least one newspaper.
                     </div>
                     <div className="float-left">
-                        <h3>Newspaper &amp; Advertisement Info</h3>
-                        <p className="lead">Here you can define newspaper &amp; advertisement information for
-                            the source
-                            material you are about to
-                            provide.</p>
+                        <h3>Newspaper Information</h3>
+                        <p className="lead">Here you can give information about each newspaper that you collected from.</p>
                     </div>
 
                     <div className="float-right">
                         <button type="button" className="btn btn-sm btn-primary"
-                                data-toggle="modal" data-target="#addInformation">Add Information
+                                data-toggle="modal" data-target="#addInformation">Add Newspaper
                         </button>
                     </div>
                 </div>
@@ -175,7 +175,7 @@ const NewspaperInfoStep = observer(class NewspaperInfoStep extends Component {
                     </div>
                 </div>
 
-                <div className="modal fade" id="addInformation" tabIndex="-1" role="dialog"
+                <div className="modal fade" id="addInformation" tabIndex="-1" role="dialog"  data-backdrop="static"
                      aria-labelledby="addInformationLabel" aria-hidden="true">
                     <div className="modal-dialog modal-lg" role="document">
                         <div className="modal-content">

@@ -6,8 +6,7 @@ import approve from 'approvejs';
 
 const ContactStep = observer(class ContactStep extends Component {
 
-    constructor(props) {
-        super(props);
+    componentDidMount() {
         reaction(
             () => this.props.storage.validationTrigger,
             () => {
@@ -28,14 +27,9 @@ const ContactStep = observer(class ContactStep extends Component {
         }).approved;
         let validContactName = approve.value(contactInfo.get('contactName'), {required: true, min: 1}).approved;
         let validContactEmail = approve.value(contactInfo.get('contactEmail'), {required: true, email: true}).approved;
-        let validDescription = approve.value(contactInfo.get('submissionDescription'), {
-            required: true,
-            min: 1
-        }).approved;
-        let validIdentifier = approve.value(contactInfo.get('submissionIdentifier'), {required: true, min: 1}).approved;
 
         if (contactInfo && validInstitutionName && validInstitutionAddress &&
-            validContactName && validContactEmail && validDescription && validIdentifier) {
+            validContactName && validContactEmail) {
             this.props.storage.setStepValidation(1, false);
         } else {
             this.props.storage.setStepValidation(1, true);
@@ -70,7 +64,7 @@ const ContactStep = observer(class ContactStep extends Component {
                                        type="text" value={this.props.storage.contactInfo.get('institutionName')}
                                        onChange={this.handleChange}/>
                                 <div className="valid-feedback">
-                                    Great! This will appear in the citation information.
+                                    Great! {this.props.storage.contactInfo.get('institutionName')} will appear in the citation information.
                                 </div>
                                 <div className="invalid-feedback">
                                     Please provide an institution name.
@@ -129,41 +123,6 @@ const ContactStep = observer(class ContactStep extends Component {
                         </div>
                     </div>
 
-                    <h3>Submission Metadata</h3>
-
-                    <div className="row pt-1">
-                        <div className="col">
-                            <div className="form-group form-label-group required">
-                                <label htmlFor="submissionDescription">Description</label>
-                                <input id="submissionDescription" name="submissionDescription" className="form-control"
-                                       placeholder="Description" type="text" required
-                                       value={this.props.storage.contactInfo.get('submissionDescription')}
-                                       onChange={this.handleChange}/>
-                                <div className="valid-feedback">
-                                    Great! This description will appear alongside citation information.
-                                </div>
-                                <div className="invalid-feedback">
-                                    Please provide a brief description of this submission.
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="col">
-                            <div className="form-group form-label-group required">
-                                <label htmlFor="submissionIdentifier">Submission Identifier</label>
-                                <input id="submissionIdentifier" name="submissionIdentifier" className="form-control"
-                                       placeholder="Submission Identifier" type="text" required
-                                       value={this.props.storage.contactInfo.get('submissionIdentifier')}
-                                       onChange={this.handleChange}/>
-                                <div className="valid-feedback">
-                                    We will identify your submission with the label {this.props.storage.contactInfo.get('submissionIdentifier')}.
-                                </div>
-                                <div className="invalid-feedback">
-                                    Please provide an identifier that will be used to reference this submission.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </form>
             </div>
         )

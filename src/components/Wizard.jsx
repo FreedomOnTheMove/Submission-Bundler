@@ -77,8 +77,9 @@ const Wizard = observer(class Wizard extends Component {
                     <div className="row">
                         <div className="col">
                             <p className="lead text-center font-weight-normal">
-                                This utility will help you prepare an archive of advertisements that is<br/>ready for both preservation and import into our crowdsourcing system.<br/><br/>
-                                Please contact us if you require assistance.<br/><br/>
+                                This utility will help you prepare bundle of advertisements that is<br/>ready for import into our crowdsourcing system.<br/><br/>
+                                Please contact us if you require assistance:<br/>
+                                <a href="mailto:contact@freedomonthemove.org">contact@freedomonthemove.org</a><br/><br/>
                                 <button className="btn btn-lg btn-primary" type="button"
                                         onClick={this.next}>Get Started
                                 </button>
@@ -144,12 +145,9 @@ const Wizard = observer(class Wizard extends Component {
         let orgAddress = 'Organization-Address: ' + this.props.storage.contactInfo.get('institutionAddress') + '\n';
         let contactName = 'Contact-Name: ' + this.props.storage.contactInfo.get('contactName') + '\n';
         let contactEmail = 'Contact-Email: ' + this.props.storage.contactInfo.get('contactEmail') + '\n';
-        let externalDescription = 'External-Description: ' + this.props.storage.contactInfo.get('submissionDescription') + '\n';
-        let externalId = 'External-Identifier: ' + this.props.storage.contactInfo.get('submissionIdentifier') + '\n';
         let baggingDate = 'Bagging-Date: ' + moment().toISOString();
 
-        return bagitProfile + sourceOrg + orgAddress + contactName + contactEmail
-            + externalDescription + externalId + baggingDate;
+        return bagitProfile + sourceOrg + orgAddress + contactName + contactEmail + baggingDate;
     };
 
     render() {
@@ -170,7 +168,7 @@ const Wizard = observer(class Wizard extends Component {
                                 <div className="progress-bar"></div>
                             </div>
                             <span className="bs-wizard-dot"></span>
-                            <div className="bs-wizard-info text-center">Basic Info</div>
+                            <div className="bs-wizard-info text-center">Contact Information</div>
                         </div>
 
                         <div className={this.stepperClass(2)}>
@@ -179,7 +177,7 @@ const Wizard = observer(class Wizard extends Component {
                                 <div className="progress-bar"></div>
                             </div>
                             <span className="bs-wizard-dot"></span>
-                            <div className="bs-wizard-info text-center">Newspaper &amp; Advertisement Info</div>
+                            <div className="bs-wizard-info text-center">Newspaper Information</div>
                         </div>
 
                         <div className={this.stepperClass(3)}>
@@ -188,7 +186,7 @@ const Wizard = observer(class Wizard extends Component {
                                 <div className="progress-bar"></div>
                             </div>
                             <span className="bs-wizard-dot"></span>
-                            <div className="bs-wizard-info text-center">Source Material Selection</div>
+                            <div className="bs-wizard-info text-center">Ad Scan Selection</div>
                         </div>
 
                         <div className={this.stepperClass(4)}>
@@ -210,7 +208,7 @@ const Wizard = observer(class Wizard extends Component {
                         {this.props.storage.currentStep > 0 && this.props.storage.currentStep < 4 ?
                             <button className="btn btn-primary float-right" type="button"
                                     onClick={this.next}>Next</button>
-                             : null}
+                            : null}
 
                         {this.props.storage.currentStep === 4 && <button type="button" className="btn btn-primary float-right" onClick={this.buildZip}>Build Bundle</button>}
                     </div>
@@ -237,7 +235,7 @@ const Wizard = observer(class Wizard extends Component {
                                 <h5 className="modal-title">Bundle is being created.</h5>
                             </div>
                             <div className="modal-body text-center">
-                                <img src={loading} alt="Building bundle" />
+                                <img src={loading} alt="Building bundle"/>
                             </div>
                         </div>
                     </div>
@@ -250,7 +248,7 @@ const Wizard = observer(class Wizard extends Component {
                                 <h5 className="modal-title">All done!</h5>
                             </div>
                             <div className="modal-body text-center">
-                                <img width="300" src={done} alt="Done checkmark" /><br />
+                                <img width="300" src={done} alt="Done checkmark"/><br/>
                                 Please send this bundle to submissions@freedomonthemove.org.
                             </div>
                         </div>

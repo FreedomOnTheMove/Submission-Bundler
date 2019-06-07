@@ -39,11 +39,6 @@ const BundleStep = observer(class BundleStep extends Component {
                     <dt className="col-sm-3">Contact Email Address</dt>
                     <dd className="col-sm-9">{this.props.storage.contactInfo.get('contactEmail')}</dd>
 
-                    <dt className="col-sm-3">Submission Description</dt>
-                    <dd className="col-sm-9">{this.props.storage.contactInfo.get('submissionDescription')}</dd>
-
-                    <dt className="col-sm-3">Submission Identifier</dt>
-                    <dd className="col-sm-9">{this.props.storage.contactInfo.get('submissionIdentifier')}</dd>
                 </dl>
 
                 <h4>Source Material Summary</h4>
