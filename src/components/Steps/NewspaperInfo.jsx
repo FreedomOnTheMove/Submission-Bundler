@@ -145,7 +145,7 @@ const NewspaperInfoStep = observer(class NewspaperInfoStep extends Component {
                         Please provide information for at least one newspaper.
                     </div>
                     <div className="float-left">
-                        <h3>Newspaper Information</h3>
+                        <h2>Newspaper Information</h2>
                         <p className="lead">Here you can give information about each newspaper that you collected from.</p>
                     </div>
 
@@ -180,9 +180,9 @@ const NewspaperInfoStep = observer(class NewspaperInfoStep extends Component {
                     <div className="modal-dialog modal-lg" role="document">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h4 className="modal-title" id="addInformationLabel">Add
+                                <p className="modal-title" id="addInformationLabel">Add
                                     Newspaper &amp; Advertisement
-                                    Info</h4>
+                                    Info</p>
                             </div>
                             <div className="modal-body">
                                 <div className="row">

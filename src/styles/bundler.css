@@ -3,6 +3,11 @@
     --input-padding-y: .75rem;
 }
 
+a {
+    color: #0a70a4;
+    font-weight: bold;
+}
+
 a:hover {
     text-decoration: none;
 }
@@ -23,7 +28,8 @@ a:hover {
 }
 
 .bs-wizard > .bs-wizard-step .bs-wizard-info {
-    color: #999;
+    color: #000;
+    font-weight: bold;
     font-size: 14px;
 }
 
@@ -110,22 +116,6 @@ a:hover {
     height: 175px;
 }
 
-.ciser-link {
-    color: #EE5239;
-}
-
-.ciser-link:hover {
-    color: #ee5239;
-}
-
-.neh-link {
-    color: #7d8524;
-}
-
-.neh-link:hover {
-    color: #7d8524;
-}
-
 .advertisement-list {
     max-height: 500px;
     overflow: -moz-scrollbars-vertical;
@@ -155,4 +145,18 @@ a:hover {
 .form-group.required label:after {
     content:" *";
     color:red;
+}
+
+.valid-feedback {
+    color: #080 !important;
+    font-weight: bold;
+}
+
+.invalid-feedback {
+    font-weight: bold;
+}
+
+.modal-title {
+    font-weight: bolder;
+    font-size: 1.25em;
 }

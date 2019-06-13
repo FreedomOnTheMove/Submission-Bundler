@@ -1,5 +1,6 @@
 import * as mobx from 'mobx';
 import lodash from 'lodash';
+import { ulid } from 'ulid';
 
 mobx.useStrict(true);
 
@@ -14,6 +15,8 @@ class StorageManager {
                 ['institutionAddress', ''],
                 ['contactName', ''],
                 ['contactEmail', ''],
+                ['submissionDescription', ''],
+                ['submissionIdentifier', ulid()],
             ])),
             newspapers: new mobx.ObservableMap(),
 
@@ -31,6 +34,9 @@ class StorageManager {
                         break;
                     case 'contactEmail':
                         this.contactInfo.set('contactEmail', value);
+                        break;
+                    case 'submissionDescription':
+                        this.contactInfo.set('submissionDescription', value);
                         break;
                     default:
                         break;

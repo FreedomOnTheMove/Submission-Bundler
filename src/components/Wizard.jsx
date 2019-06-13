@@ -20,6 +20,8 @@ import $ from 'jquery';
 import loading from '../img/loading.gif';
 import done from '../img/done.gif';
 
+import guide from '../pdfs/FOTM_Contributor_Guide.pdf';
+
 const bagitTXT = 'BagIt-Version: 0.97\n' +
     'Tag-File-Character-Encoding: UTF-8';
 
@@ -77,9 +79,10 @@ const Wizard = observer(class Wizard extends Component {
                     <div className="row">
                         <div className="col">
                             <p className="lead text-center font-weight-normal">
-                                This utility will help you prepare bundle of advertisements that is<br/>ready for import into our crowdsourcing system.<br/><br/>
+                                This utility will help you bundle advertisements you have collected<br/>into a format that can be imported into our system.<br/><br/>
                                 Please contact us if you require assistance:<br/>
                                 <a href="mailto:contact@freedomonthemove.org">contact@freedomonthemove.org</a><br/><br/>
+                                <a href={guide} target="_blank" rel="noopener noreferrer" className="btn btn-lg btn-outline-dark">Contributor Guide</a>&nbsp;&nbsp;&nbsp;
                                 <button className="btn btn-lg btn-primary" type="button"
                                         onClick={this.next}>Get Started
                                 </button>
@@ -122,7 +125,7 @@ const Wizard = observer(class Wizard extends Component {
         zip.file('manifest-md5.txt', manifest);
 
         let filename = this.props.storage.contactInfo.get('institutionName')
-            + ' - ' + this.props.storage.contactInfo.get('submissionIdentifier') + '.zip';
+            + ' - FOTM Submission - ' + this.props.storage.contactInfo.get('submissionIdentifier') + '.zip';
 
         zip.generateAsync({type: "blob"})
             .then(function (blob) {
@@ -145,16 +148,19 @@ const Wizard = observer(class Wizard extends Component {
         let orgAddress = 'Organization-Address: ' + this.props.storage.contactInfo.get('institutionAddress') + '\n';
         let contactName = 'Contact-Name: ' + this.props.storage.contactInfo.get('contactName') + '\n';
         let contactEmail = 'Contact-Email: ' + this.props.storage.contactInfo.get('contactEmail') + '\n';
+        let externalDescription = 'External-Description: ' + this.props.storage.contactInfo.get('submissionDescription') + '\n';
+        let externalId = 'External-Identifier: ' + this.props.storage.contactInfo.get('submissionIdentifier') + '\n';
         let baggingDate = 'Bagging-Date: ' + moment().toISOString();
 
-        return bagitProfile + sourceOrg + orgAddress + contactName + contactEmail + baggingDate;
+        return bagitProfile + sourceOrg + orgAddress + contactName + contactEmail
+            + externalDescription + externalId + baggingDate;
     };
 
     render() {
         return (
             <div className="App">
                 <div className="px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
-                    <img className="icon" src={icon} alt="Newspaper icon"/>
+                    <img className="icon" src={icon} alt="Enslaved person fleeing with a bindle stick"/>
                     <h1 className="d-inline-block align-middle display-4">Freedom on the Move<br/>Submission Bundler
                     </h1>
                 </div>
@@ -220,10 +226,10 @@ const Wizard = observer(class Wizard extends Component {
 
                 <div className="mx-auto text-center mb-5">
                     <small className="font-weight-light">Brought to life at <a
-                        href="https://ciser.cornell.edu" className="ciser-link">CISER</a>.<br/>Made possible by generous
+                        href="https://ciser.cornell.edu" className="ciser-link">CISER</a><br/>Made possible by generous
                         funding from
                         the<br/><a href="https://www.neh.gov/" className="neh-link">National Endowment for the
-                            Humanities</a>.
+                            Humanities</a>
                     </small>
                 </div>
 
@@ -232,10 +238,10 @@ const Wizard = observer(class Wizard extends Component {
                     <div className="modal-dialog" role="document">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h5 className="modal-title">Bundle is being created.</h5>
+                                <p className="modal-title">Bundle is being created.</p>
                             </div>
                             <div className="modal-body text-center">
-                                <img src={loading} alt="Building bundle"/>
+                                <img src={loading} alt="Spinning loader icon"/>
                             </div>
                         </div>
                     </div>
@@ -245,11 +251,11 @@ const Wizard = observer(class Wizard extends Component {
                     <div className="modal-dialog" role="document">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h5 className="modal-title">All done!</h5>
+                                <p className="modal-title">All done!</p>
                             </div>
                             <div className="modal-body text-center">
-                                <img width="300" src={done} alt="Done checkmark"/><br/>
-                                Please send this bundle to submissions@freedomonthemove.org.
+                                <img width="300" src={done} alt="Green animated checkmark"/><br/>
+                                Please send this bundle to <a href="mailto:contact@freedomonthemove.org">contact@freedomonthemove.org</a>.
                             </div>
                         </div>
                     </div>

@@ -74,7 +74,9 @@ const AdvertisementSelectionStep = observer(class AdvertisementSelectionStep ext
         return (
             <div key={newspaper.id} className="row">
                 <div className="col-12">
-                    <h5>{newspaper.name} Advertisements</h5>
+                    <label htmlFor={newspaper.id}>
+                        <h3>{newspaper.name} Advertisements</h3>
+                    </label>
                     <FileHandler name={newspaper.id} multiple={true}
                                  handleSelection={this.handleAdvertisements} context={newspaper.id}/>
                 </div>
@@ -105,7 +107,7 @@ const AdvertisementSelectionStep = observer(class AdvertisementSelectionStep ext
                     Please upload at least one advertisement for each newspaper specified in step two.
                 </div>
                 <div className="clearfix pb-3">
-                    <h3>Advertisement Selection</h3>
+                    <h2>Advertisement Selection</h2>
                     <p className="lead">Here you can upload advertisement scans from the newspapers entered in step two.</p>
                 </div>
                 {uploadSections}

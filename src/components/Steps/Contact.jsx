@@ -52,7 +52,7 @@ const ContactStep = observer(class ContactStep extends Component {
     render() {
         return (
             <div>
-                <h3>Contact Information</h3>
+                <h2>Contact Information</h2>
 
                 <form name="bundlerForm" className="needs-validation" noValidate>
                     <div className="row">
@@ -64,7 +64,7 @@ const ContactStep = observer(class ContactStep extends Component {
                                        type="text" value={this.props.storage.contactInfo.get('institutionName')}
                                        onChange={this.handleChange}/>
                                 <div className="valid-feedback">
-                                    Great! {this.props.storage.contactInfo.get('institutionName')} will appear in the citation information.
+                                    {this.props.storage.contactInfo.get('institutionName')} will appear in the citation information.
                                 </div>
                                 <div className="invalid-feedback">
                                     Please provide an institution name.
@@ -80,7 +80,7 @@ const ContactStep = observer(class ContactStep extends Component {
                                        type="text" value={this.props.storage.contactInfo.get('institutionAddress')}
                                        onChange={this.handleChange}/>
                                 <div className="valid-feedback">
-                                    Great! This will appear in the citation information.
+                                    This address will appear alongside the institution name in the citation information.
                                 </div>
                                 <div className="invalid-feedback">
                                     Please provide an address.
@@ -98,7 +98,9 @@ const ContactStep = observer(class ContactStep extends Component {
                                        type="text" value={this.props.storage.contactInfo.get('contactName')} required
                                        onChange={this.handleChange}/>
                                 <div className="valid-feedback">
-                                   We just need to know who to contact if something comes up.<br/>This will not be shared.
+                                    Nice to meet you {this.props.storage.contactInfo.get('contactName')}!<br/>
+                                    We just need to know who to contact if we have a question about this submission.<br/>
+                                    Your name will not be shared.
                                 </div>
                                 <div className="invalid-feedback">
                                     Please provide the point of contact's name.
@@ -114,10 +116,30 @@ const ContactStep = observer(class ContactStep extends Component {
                                        type="email" value={this.props.storage.contactInfo.get('contactEmail')}
                                        onChange={this.handleChange}/>
                                 <div className="valid-feedback">
-                                   Great! We will email {this.props.storage.contactInfo.get('contactEmail')} if we need to contact you.<br />This email address will not be shared.
+                                    We will email {this.props.storage.contactInfo.get('contactEmail')} if we need to contact you about this submission.<br/>Your email address will not be shared.
                                 </div>
                                 <div className="invalid-feedback">
                                     Please provide the point of contact's email.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2>Submission Metadata</h2>
+
+                    <div className="row pt-1">
+                        <div className="col">
+                            <div className="form-group form-label-group required">
+                                <label htmlFor="submissionDescription">Description</label>
+                                <input id="submissionDescription" name="submissionDescription" className="form-control"
+                                       placeholder="Describe what are you submitting to the project." type="text" required
+                                       value={this.props.storage.contactInfo.get('submissionDescription')}
+                                       onChange={this.handleChange}/>
+                                <div className="valid-feedback">
+                                    Great! We are both excited and grateful that you are sending this material to us.
+                                </div>
+                                <div className="invalid-feedback">
+                                    Please provide a brief description of this submission.
                                 </div>
                             </div>
                         </div>

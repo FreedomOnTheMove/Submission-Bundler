@@ -1,6 +1,6 @@
 {
   "name": "fotm-bundler",
-  "homepage": "https://fotm-bundler.ciser.cloud",
+  "homepage": "https://bundler.freedomonthemove.org",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -22,7 +22,8 @@
     "react-dom": "^16.2.0",
     "react-github-corner": "^2.1.0",
     "react-scripts": "^3.0.1",
-    "spark-md5": "^3.0.0"
+    "spark-md5": "^3.0.0",
+    "ulid": "^2.3.0"
   },
   "scripts": {
     "start": "react-scripts start",

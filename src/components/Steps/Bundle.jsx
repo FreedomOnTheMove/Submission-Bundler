@@ -25,8 +25,12 @@ const BundleStep = observer(class BundleStep extends Component {
 
         return (
             <div>
-                <h3>Bundle Creation Summary</h3>
+                <h2>Bundle Creation Summary</h2>
                 <dl className="row mt-3">
+
+                    <dt className="col-sm-3">Unique Submission Identifier</dt>
+                    <dd className="col-sm-9">{this.props.storage.contactInfo.get('submissionIdentifier')}</dd>
+
                     <dt className="col-sm-3">Institution Name</dt>
                     <dd className="col-sm-9">{this.props.storage.contactInfo.get('institutionName')}</dd>
 
@@ -39,9 +43,12 @@ const BundleStep = observer(class BundleStep extends Component {
                     <dt className="col-sm-3">Contact Email Address</dt>
                     <dd className="col-sm-9">{this.props.storage.contactInfo.get('contactEmail')}</dd>
 
+                    <dt className="col-sm-3">Submission Description</dt>
+                    <dd className="col-sm-9">{this.props.storage.contactInfo.get('submissionDescription')}</dd>
+
                 </dl>
 
-                <h4>Source Material Summary</h4>
+                <h3>Source Material Summary</h3>
                 <div className="row">
                     <table className="table">
                         <thead>

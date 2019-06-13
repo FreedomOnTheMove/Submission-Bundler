@@ -57,7 +57,7 @@ class FileHandler extends Component {
                     <div className="modal-dialog" role="document">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h5 className="modal-title">Selected files are being processed.</h5>
+                                <p className="modal-title">Selected files are being processed.</p>
                             </div>
                             <div className="modal-body text-center">
                                 <img src={loading} alt='Processing files' />
