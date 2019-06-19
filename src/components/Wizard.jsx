@@ -20,8 +20,6 @@ import $ from 'jquery';
 import loading from '../img/loading.gif';
 import done from '../img/done.gif';
 
-import guide from '../pdfs/FOTM_Contributor_Guide.pdf';
-
 const bagitTXT = 'BagIt-Version: 0.97\n' +
     'Tag-File-Character-Encoding: UTF-8';
 
@@ -82,7 +80,7 @@ const Wizard = observer(class Wizard extends Component {
                                 This utility will help you bundle advertisements you have collected<br/>into a format that can be imported into our system.<br/><br/>
                                 Please contact us if you require assistance:<br/>
                                 <a href="mailto:contact@freedomonthemove.org">contact@freedomonthemove.org</a><br/><br/>
-                                <a href={guide} target="_blank" rel="noopener noreferrer" className="btn btn-lg btn-outline-dark">Contributor Guide</a>&nbsp;&nbsp;&nbsp;
+                                <a href="contributing.html" target="_blank" rel="noopener noreferrer" className="btn btn-lg btn-outline-dark">Contributor Guide</a>&nbsp;&nbsp;&nbsp;
                                 <button className="btn btn-lg btn-primary" type="button"
                                         onClick={this.next}>Get Started
                                 </button>
@@ -225,11 +223,8 @@ const Wizard = observer(class Wizard extends Component {
                               octoColor="#fff"/>
 
                 <div className="mx-auto text-center mb-5">
-                    <small className="font-weight-light">Brought to life at <a
-                        href="https://ciser.cornell.edu" className="ciser-link">CISER</a><br/>Made possible by generous
-                        funding from
-                        the<br/><a href="https://www.neh.gov/" className="neh-link">National Endowment for the
-                            Humanities</a>
+                    <small className="font-weight-light">Rediscover the stories of self liberating people.<br/> <a
+                        href="https://freedomonthemove.org">Freedom On The Move Homepage</a>
                     </small>
                 </div>
 

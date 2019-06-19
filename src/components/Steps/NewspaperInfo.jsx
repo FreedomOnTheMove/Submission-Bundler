@@ -6,6 +6,8 @@ import lodash from 'lodash';
 import uid from '@instructure/uid';
 import approve from 'approvejs';
 
+import $ from 'jquery';
+
 const NewspaperInfoStep = observer(class NewspaperInfoStep extends Component {
 
     constructor(props) {
@@ -15,7 +17,6 @@ const NewspaperInfoStep = observer(class NewspaperInfoStep extends Component {
             location: '',
             state: 'null',
             advertisementManifest: null,
-            addNewspaperButtonDisabled: true
         };
     }
 
@@ -44,22 +45,27 @@ const NewspaperInfoStep = observer(class NewspaperInfoStep extends Component {
             location: '',
             state: 'null',
             advertisementManifest: null,
-            addNewspaperButtonDisabled: true
         });
+
+        let form = document.getElementsByClassName('needs-validation')[0];
+        form.classList.remove('was-validated');
 
         document.getElementsByName("advertisementManifest")[0].value = "";
     };
 
     addNewspaper = () => {
-        this.props.storage.addNewspaper({
-            id: uid(),
-            name: this.state.name,
-            location: this.state.location,
-            state: this.state.state,
-            advertisementManifest: this.state.advertisementManifest
-        });
-        this.cancel();
-        this.validate();
+        if (this.validateAddNewspaper()) {
+            this.props.storage.addNewspaper({
+                id: uid(),
+                name: this.state.name,
+                location: this.state.location,
+                state: this.state.state,
+                advertisementManifest: this.state.advertisementManifest
+            });
+            $('#addInformation').modal('hide');
+            this.cancel();
+            this.validate();
+        }
     };
 
     handleChange = (event) => {
@@ -94,19 +100,20 @@ const NewspaperInfoStep = observer(class NewspaperInfoStep extends Component {
     };
 
     validateAddNewspaper = () => {
+        this.printValidationErrors();
         let validNewspaperName = approve.value(this.state.name, {required: true, min: 1}).approved;
         let validNewspaperLocation = approve.value(this.state.location, {required: true, min: 1}).approved;
         let validNewspaperState = approve.value(this.state.state, {required: true, min: 5, max: 5}).approved;
-        let validAdvertisementManifest = this.state.advertisementManifest != null;
+        let validAdvertisementManifest = approve.value(this.state.advertisementManifest, {required: true}).approved;
 
-        if (validNewspaperName && validNewspaperLocation && validNewspaperState && validAdvertisementManifest) {
-            this.setState({
-                addNewspaperButtonDisabled: false
-            });
-        } else {
-            this.setState({
-                addNewspaperButtonDisabled: true
-            });
+        return validNewspaperName && validNewspaperLocation && validNewspaperState && validAdvertisementManifest;
+    };
+
+    printValidationErrors = () => {
+        let form = document.getElementsByClassName('needs-validation')[0];
+        let valid = form.checkValidity();
+        if (!valid) {
+            form.classList.add('was-validated');
         }
     };
 
@@ -175,7 +182,7 @@ const NewspaperInfoStep = observer(class NewspaperInfoStep extends Component {
                     </div>
                 </div>
 
-                <div className="modal fade" id="addInformation" tabIndex="-1" role="dialog"  data-backdrop="static"
+                <div className="modal fade" id="addInformation" tabIndex="-1" role="dialog" data-backdrop="static"
                      aria-labelledby="addInformationLabel" aria-hidden="true">
                     <div className="modal-dialog modal-lg" role="document">
                         <div className="modal-content">
@@ -185,110 +192,125 @@ const NewspaperInfoStep = observer(class NewspaperInfoStep extends Component {
                                     Info</p>
                             </div>
                             <div className="modal-body">
-                                <div className="row">
-                                    <div className="col">
-                                        <div className="form-group required">
-                                            <label htmlFor="newspaperName">Newspaper Name</label>
-                                            <input id="newspaperName" name="newspaperName"
-                                                   className="form-control"
-                                                   placeholder="The Virginia Gazette"
-                                                   onChange={this.handleChange}
-                                                   type="text" value={this.state.name}/>
+                                <form name="addNewspaperForm" className="needs-validation" noValidate>
+                                    <div className="row">
+                                        <div className="col">
+                                            <div className="form-group required">
+                                                <label htmlFor="newspaperName">Newspaper Name</label>
+                                                <input id="newspaperName" name="newspaperName"
+                                                       className="form-control"
+                                                       placeholder="The Virginia Gazette"
+                                                       onChange={this.handleChange}
+                                                       type="text" value={this.state.name} required/>
+                                                <div className="invalid-feedback">
+                                                    Provide the name of the newspaper.
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div className="col">
-                                        <div className="form-group required">
-                                            <label htmlFor="newspaperLocation">Newspaper Location</label>
-                                            <input id="newspaperLocation" name="newspaperLocation"
-                                                   onChange={this.handleChange}
-                                                   className="form-control"
-                                                   placeholder="Williamsburg"
-                                                   type="text" value={this.state.location}/>
+                                        <div className="col">
+                                            <div className="form-group required">
+                                                <label htmlFor="newspaperLocation">Newspaper Location</label>
+                                                <input id="newspaperLocation" name="newspaperLocation"
+                                                       onChange={this.handleChange}
+                                                       className="form-control"
+                                                       placeholder="Williamsburg"
+                                                       type="text" value={this.state.location}
+                                                       required/>
+                                                <div className="invalid-feedback">
+                                                    Provide the location of where the newspaper was published.
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div className="col">
-                                        <div className="form-group required">
-                                            <label htmlFor="newspaperState">Newspaper State</label>
-                                            <select id="newspaperState" name="newspaperState"
-                                                    className="form-control custom-select"
-                                                    onChange={this.handleChange}
-                                                    value={this.state.state}>
-                                                <option value="null" disabled>Select One</option>
-                                                <option value="US-AL">Alabama</option>
-                                                <option value="US-AK">Alaska</option>
-                                                <option value="US-AZ">Arizona</option>
-                                                <option value="US-AR">Arkansas</option>
-                                                <option value="US-CA">California</option>
-                                                <option value="US-CO">Colorado</option>
-                                                <option value="US-CT">Connecticut</option>
-                                                <option value="US-DE">Delaware</option>
-                                                <option value="US-DC">District of Columbia</option>
-                                                <option value="US-FL">Florida</option>
-                                                <option value="US-GA">Georgia</option>
-                                                <option value="US-HI">Hawaii</option>
-                                                <option value="US-ID">Idaho</option>
-                                                <option value="US-IL">Illinois</option>
-                                                <option value="US-IN">Indiana</option>
-                                                <option value="US-IA">Iowa</option>
-                                                <option value="US-KS">Kansas</option>
-                                                <option value="US-KY">Kentucky</option>
-                                                <option value="US-LA">Louisiana</option>
-                                                <option value="US-ME">Maine</option>
-                                                <option value="US-MD">Maryland</option>
-                                                <option value="US-MA">Massachusetts</option>
-                                                <option value="US-MI">Michigan</option>
-                                                <option value="US-MN">Minnesota</option>
-                                                <option value="US-MS">Mississippi</option>
-                                                <option value="US-MO">Missouri</option>
-                                                <option value="US-MT">Montana</option>
-                                                <option value="US-NE">Nebraska</option>
-                                                <option value="US-NV">Nevada</option>
-                                                <option value="US-NH">New Hampshire</option>
-                                                <option value="US-NJ">New Jersey</option>
-                                                <option value="US-NM">New Mexico</option>
-                                                <option value="US-NY">New York</option>
-                                                <option value="US-NC">North Carolina</option>
-                                                <option value="US-ND">North Dakota</option>
-                                                <option value="US-OH">Ohio</option>
-                                                <option value="US-OK">Oklahoma</option>
-                                                <option value="US-OR">Oregon</option>
-                                                <option value="US-PA">Pennsylvania</option>
-                                                <option value="US-RI">Rhode Island</option>
-                                                <option value="US-SC">South Carolina</option>
-                                                <option value="US-SD">South Dakota</option>
-                                                <option value="US-TN">Tennessee</option>
-                                                <option value="US-TX">Texas</option>
-                                                <option value="US-UT">Utah</option>
-                                                <option value="US-VT">Vermont</option>
-                                                <option value="US-VA">Virginia</option>
-                                                <option value="US-WA">Washington</option>
-                                                <option value="US-WV">West Virginia</option>
-                                                <option value="US-WI">Wisconsin</option>
-                                                <option value="US-WY">Wyoming</option>
-                                            </select>
+                                        <div className="col">
+                                            <div className="form-group required">
+                                                <label htmlFor="newspaperState">Newspaper State</label>
+                                                <select id="newspaperState" name="newspaperState"
+                                                        className="form-control custom-select"
+                                                        onChange={this.handleChange}
+                                                        value={this.state.state}
+                                                        required>
+                                                    <option value="null" disabled>Select One</option>
+                                                    <option value="US-AL">Alabama</option>
+                                                    <option value="US-AK">Alaska</option>
+                                                    <option value="US-AZ">Arizona</option>
+                                                    <option value="US-AR">Arkansas</option>
+                                                    <option value="US-CA">California</option>
+                                                    <option value="US-CO">Colorado</option>
+                                                    <option value="US-CT">Connecticut</option>
+                                                    <option value="US-DE">Delaware</option>
+                                                    <option value="US-DC">District of Columbia</option>
+                                                    <option value="US-FL">Florida</option>
+                                                    <option value="US-GA">Georgia</option>
+                                                    <option value="US-HI">Hawaii</option>
+                                                    <option value="US-ID">Idaho</option>
+                                                    <option value="US-IL">Illinois</option>
+                                                    <option value="US-IN">Indiana</option>
+                                                    <option value="US-IA">Iowa</option>
+                                                    <option value="US-KS">Kansas</option>
+                                                    <option value="US-KY">Kentucky</option>
+                                                    <option value="US-LA">Louisiana</option>
+                                                    <option value="US-ME">Maine</option>
+                                                    <option value="US-MD">Maryland</option>
+                                                    <option value="US-MA">Massachusetts</option>
+                                                    <option value="US-MI">Michigan</option>
+                                                    <option value="US-MN">Minnesota</option>
+                                                    <option value="US-MS">Mississippi</option>
+                                                    <option value="US-MO">Missouri</option>
+                                                    <option value="US-MT">Montana</option>
+                                                    <option value="US-NE">Nebraska</option>
+                                                    <option value="US-NV">Nevada</option>
+                                                    <option value="US-NH">New Hampshire</option>
+                                                    <option value="US-NJ">New Jersey</option>
+                                                    <option value="US-NM">New Mexico</option>
+                                                    <option value="US-NY">New York</option>
+                                                    <option value="US-NC">North Carolina</option>
+                                                    <option value="US-ND">North Dakota</option>
+                                                    <option value="US-OH">Ohio</option>
+                                                    <option value="US-OK">Oklahoma</option>
+                                                    <option value="US-OR">Oregon</option>
+                                                    <option value="US-PA">Pennsylvania</option>
+                                                    <option value="US-RI">Rhode Island</option>
+                                                    <option value="US-SC">South Carolina</option>
+                                                    <option value="US-SD">South Dakota</option>
+                                                    <option value="US-TN">Tennessee</option>
+                                                    <option value="US-TX">Texas</option>
+                                                    <option value="US-UT">Utah</option>
+                                                    <option value="US-VT">Vermont</option>
+                                                    <option value="US-VA">Virginia</option>
+                                                    <option value="US-WA">Washington</option>
+                                                    <option value="US-WV">West Virginia</option>
+                                                    <option value="US-WI">Wisconsin</option>
+                                                    <option value="US-WY">Wyoming</option>
+                                                </select>
+                                                <div className="invalid-feedback">
+                                                    Provide the state the newspaper was published in.
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <hr/>
-                                <div className="row">
-                                    <div className="col">
-                                        <div className="form-group required">
-                                            <label htmlFor="advertisementManifest">Advertisement
-                                                Manifest</label>
-                                            <FileHandler name="advertisementManifest" accept=".csv"
-                                                         handleSelection={this.handleManifiestSelection}/>
+                                    <hr/>
+                                    <div className="row">
+                                        <div className="col">
+                                            <div className="form-group required">
+                                                <label htmlFor="advertisementManifest">Advertisement
+                                                    Manifest</label>
+                                                <FileHandler name="advertisementManifest" accept=".csv"
+                                                             handleSelection={this.handleManifiestSelection}
+                                                             invalidFeedback={'Provide a CSV file with advertisement mappings.'}
+                                                             required/>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </form>
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-outline-danger" data-dismiss="modal"
                                         onClick={this.cancel}>Cancel
                                 </button>
-                                <button type="button" className="btn btn-primary" data-dismiss="modal"
-                                        onClick={this.addNewspaper} disabled={this.state.addNewspaperButtonDisabled}>Add
+                                <button type="button" className="btn btn-primary"
+                                        onClick={this.addNewspaper}>Add
                                 </button>
                             </div>
                         </div>

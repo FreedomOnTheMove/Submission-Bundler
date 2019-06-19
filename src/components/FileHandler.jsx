@@ -33,7 +33,7 @@ class FileHandler extends Component {
                     };
                 })(file);
 
-                reader.onerror = (function (file) {
+                reader.onerror = (function () {
                     return function (event) {
                         console.error(event);
                         reject();
@@ -65,9 +65,14 @@ class FileHandler extends Component {
                         </div>
                     </div>
                 </div>
-                <input id={this.props.name} className="form-control-file" type="file" name={this.props.name}
+                <input required={this.props.required} id={this.props.name} className="form-control-file" type="file" name={this.props.name}
                        accept={this.props.accept}
                        onChange={this.handleFiles} multiple={this.props.multiple} value={this.props.value}/>
+
+                {this.props.required ? <div className="invalid-feedback">
+                    {this.props.invalidFeedback}
+                </div> : null}
+
             </div>
         )
     };
